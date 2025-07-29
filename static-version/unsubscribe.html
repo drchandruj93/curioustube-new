@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unsubscribe - Curioustube</title>
+    <meta name="description" content="Unsubscribe from Curioustube newsletter">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #000000;
+            color: #ffffff;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 500px;
+            width: 100%;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ffffff;
+            text-decoration: none;
+        }
+
+        .logo:hover {
+            opacity: 0.7;
+        }
+
+        .unsubscribe-card {
+            background: #111111;
+            border: 1px solid #333;
+            padding: 32px;
+            border-radius: 8px;
+        }
+
+        .icon {
+            text-align: center;
+            margin-bottom: 24px;
+            font-size: 48px;
+            color: #666;
+        }
+
+        .title {
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+
+        .description {
+            color: #666;
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            background: #000000;
+            border: 1px solid #333;
+            color: #ffffff;
+            font-size: 16px;
+            border-radius: 4px;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #ffffff;
+        }
+
+        .form-input::placeholder {
+            color: #666;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 12px;
+            background: #ffffff;
+            color: #000000;
+            border: none;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+            margin-bottom: 16px;
+        }
+
+        .submit-btn:hover {
+            background: #e5e5e5;
+        }
+
+        .submit-btn:disabled {
+            background: #666;
+            cursor: not-allowed;
+        }
+
+        .error-message {
+            color: #ff6b6b;
+            text-align: center;
+            font-size: 14px;
+            margin-top: 8px;
+            display: none;
+        }
+
+        .success-card {
+            display: none;
+            text-align: center;
+        }
+
+        .success-icon {
+            font-size: 64px;
+            color: #4ade80;
+            margin-bottom: 24px;
+        }
+
+        .success-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 16px;
+        }
+
+        .success-description {
+            color: #666;
+            margin-bottom: 32px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .home-btn {
+            background: #ffffff;
+            color: #000000;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: 500;
+            transition: background-color 0.3s;
+        }
+
+        .home-btn:hover {
+            background: #e5e5e5;
+        }
+
+        .subscribe-again-btn {
+            color: #666;
+            text-decoration: underline;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            transition: color 0.3s;
+        }
+
+        .subscribe-again-btn:hover {
+            color: #ffffff;
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 24px;
+        }
+
+        .back-link a {
+            color: #666;
+            text-decoration: underline;
+            transition: color 0.3s;
+        }
+
+        .back-link a:hover {
+            color: #ffffff;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 16px;
+            }
+            
+            .unsubscribe-card {
+                padding: 24px;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="index.html" class="logo">Curioustube</a>
+        </div>
+
+        <!-- Unsubscribe Form -->
+        <div class="unsubscribe-card" id="unsubscribeForm">
+            <div class="icon">📧</div>
+            <h1 class="title">Unsubscribe</h1>
+            <p class="description">
+                Sorry to see you go. Enter your email address to unsubscribe from our newsletter.
+            </p>
+
+            <form onsubmit="handleUnsubscribe(event)">
+                <div class="form-group">
+                    <input 
+                        type="email" 
+                        class="form-input" 
+                        placeholder="Enter your email address"
+                        required
+                        id="emailInput"
+                    >
+                </div>
+                
+                <button type="submit" class="submit-btn" id="submitBtn">
+                    Unsubscribe
+                </button>
+
+                <div class="error-message" id="errorMessage">
+                    Email not found or already unsubscribed.
+                </div>
+            </form>
+
+            <div class="back-link">
+                <a href="index.html">Return to homepage</a>
+            </div>
+        </div>
+
+        <!-- Success Message -->
+        <div class="success-card" id="successCard">
+            <div class="success-icon">✅</div>
+            <h1 class="success-title">Successfully Unsubscribed</h1>
+            <p class="success-description">
+                You have been unsubscribed from our newsletter. You will no longer receive emails from Curioustube.
+            </p>
+            
+            <p style="color: #666; font-size: 14px; margin-bottom: 24px;">
+                Changed your mind? You can always subscribe again.
+            </p>
+            
+            <div class="action-buttons">
+                <a href="index.html" class="home-btn">Return to Homepage</a>
+                <button class="subscribe-again-btn" onclick="showSubscribeForm()">
+                    Subscribe Again
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function handleUnsubscribe(event) {
+            event.preventDefault();
+            
+            const email = document.getElementById('emailInput').value;
+            const submitBtn = document.getElementById('submitBtn');
+            const errorMessage = document.getElementById('errorMessage');
+            
+            // Simple email validation
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                showError('Please enter a valid email address.');
+                return;
+            }
+
+            // Disable submit button and show loading
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Unsubscribing...';
+            errorMessage.style.display = 'none';
+
+            // Simulate unsubscribe process (in real app, this would call an API)
+            setTimeout(() => {
+                // Simulate success (you can add email validation logic here)
+                showSuccess();
+            }, 1500);
+        }
+
+        function showError(message) {
+            const errorMessage = document.getElementById('errorMessage');
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+            
+            // Reset submit button
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Unsubscribe';
+        }
+
+        function showSuccess() {
+            document.getElementById('unsubscribeForm').style.display = 'none';
+            document.getElementById('successCard').style.display = 'block';
+        }
+
+        function showSubscribeForm() {
+            // Redirect to homepage with subscription modal
+            window.location.href = 'index.html#subscribe';
+        }
+
+        // Check if user came from an unsubscribe link with email parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const emailParam = urlParams.get('email');
+        if (emailParam) {
+            document.getElementById('emailInput').value = decodeURIComponent(emailParam);
+        }
+
+        // Auto-open subscription modal if hash is present
+        if (window.location.hash === '#subscribe') {
+            // This would need to be handled by the index.html page
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 100);
+        }
+    </script>
+</body>
+</html>

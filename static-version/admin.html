@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Curioustube</title>
+    <meta name="description" content="Manage Curioustube content">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #000000;
+            color: #ffffff;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .header {
+            border-bottom: 1px solid #333;
+            padding: 24px 16px;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ffffff;
+        }
+
+        .main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 32px 16px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 32px;
+            border-bottom: 1px solid #333;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            font-size: 16px;
+            transition: color 0.3s;
+            border-bottom: 2px solid transparent;
+        }
+
+        .tab.active {
+            color: #ffffff;
+            border-bottom-color: #ffffff;
+        }
+
+        .tab:hover {
+            color: #ffffff;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            background: #ffffff;
+            color: #000000;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background-color 0.3s;
+            border-radius: 4px;
+        }
+
+        .btn:hover {
+            background: #e5e5e5;
+        }
+
+        .btn-outline {
+            background: none;
+            color: #666;
+            border: 1px solid #333;
+        }
+
+        .btn-outline:hover {
+            background: #333;
+            color: #ffffff;
+        }
+
+        .btn-danger {
+            background: none;
+            color: #ff6b6b;
+            border: 1px solid #ff6b6b;
+        }
+
+        .btn-danger:hover {
+            background: #ff6b6b;
+            color: #ffffff;
+        }
+
+        .card {
+            background: #111111;
+            border: 1px solid #333;
+            border-radius: 8px;
+            margin-bottom: 16px;
+        }
+
+        .card-content {
+            padding: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 4px;
+            font-weight: 500;
+        }
+
+        .form-input, .form-textarea {
+            width: 100%;
+            padding: 12px;
+            background: #000000;
+            border: 1px solid #333;
+            color: #ffffff;
+            font-size: 16px;
+            border-radius: 4px;
+            font-family: inherit;
+        }
+
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .form-input:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #ffffff;
+        }
+
+        .form-input::placeholder, .form-textarea::placeholder {
+            color: #666;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 16px;
+        }
+
+        .article-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 16px;
+        }
+
+        .article-content {
+            flex: 1;
+        }
+
+        .article-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .article-preview {
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .article-meta {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .article-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        .subscriber-list {
+            background: #000000;
+            border-radius: 4px;
+            padding: 16px;
+        }
+
+        .subscriber-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: #111111;
+            border-radius: 4px;
+            margin-bottom: 8px;
+        }
+
+        .subscriber-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .subscriber-email {
+            color: #ffffff;
+        }
+
+        .subscriber-date {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .instructions {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 32px;
+        }
+
+        .instructions h3 {
+            margin-bottom: 16px;
+            color: #ffffff;
+        }
+
+        .instructions p {
+            color: #ccc;
+            margin-bottom: 12px;
+        }
+
+        .instructions code {
+            background: #000;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+
+            .article-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .tabs {
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <h1 class="logo">Curioustube Admin</h1>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="instructions">
+            <h3>Static Website Management</h3>
+            <p>This is a static version of your admin panel. To add new articles or manage content:</p>
+            <p>1. Edit the <code>index.html</code> file directly</p>
+            <p>2. Add new article HTML in the articles section</p>
+            <p>3. Update dates and content as needed</p>
+            <p>4. Commit changes to GitHub and redeploy to Cloudflare Pages</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('articles')">Articles</button>
+            <button class="tab" onclick="showTab('subscribers')">Email Setup</button>
+        </div>
+
+        <!-- Articles Tab -->
+        <div class="tab-content active" id="articles">
+            <div class="section-header">
+                <h2 class="section-title">Current Articles</h2>
+                <a href="#" class="btn" onclick="showAddInstructions()">Add New Article</a>
+            </div>
+
+            <div id="addInstructions" style="display: none;" class="card">
+                <div class="card-content">
+                    <h3 style="margin-bottom: 16px;">How to Add a New Article</h3>
+                    <p style="color: #ccc; margin-bottom: 16px;">To add a new article, copy and paste this template into the articles section of index.html:</p>
+                    <pre style="background: #000; padding: 16px; border-radius: 4px; overflow-x: auto; font-size: 14px; color: #ccc; margin-bottom: 16px;"><code>&lt;article class="article"&gt;
+    &lt;div class="article-date"&gt;Jan 20 2025&lt;/div&gt;
+    &lt;div class="article-content"&gt;
+        &lt;div class="article-preview"&gt;
+            &lt;p&gt;Your article preview text here...&lt;/p&gt;
+            &lt;button class="more-btn" onclick="expandArticle(this)"&gt;More&lt;/button&gt;
+        &lt;/div&gt;
+        &lt;div class="article-full"&gt;
+            &lt;p&gt;Full article paragraph 1...&lt;/p&gt;
+            &lt;p&gt;Full article paragraph 2...&lt;/p&gt;
+            &lt;p&gt;Full article paragraph 3...&lt;/p&gt;
+            &lt;button class="less-btn" onclick="collapseArticle(this)"&gt;Less&lt;/button&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/article&gt;</code></pre>
+                    <button class="btn-outline" onclick="hideAddInstructions()">Close</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-content">
+                    <div class="article-item">
+                        <div class="article-content">
+                            <div class="article-title">The Power of Compound Growth</div>
+                            <div class="article-preview">When you truly understand compound growth, you realize that patience isn't just a virtue—it's a superpower...</div>
+                            <div class="article-meta">Jan 15 2025 • Published</div>
+                        </div>
+                        <div class="article-actions">
+                            <button class="btn btn-outline btn-sm" onclick="alert('Edit index.html directly to modify this article')">Edit</button>
+                            <button class="btn btn-danger btn-sm" onclick="alert('Remove the article HTML from index.html to delete')">Delete</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-content">
+                    <div class="article-item">
+                        <div class="article-content">
+                            <div class="article-title">True Productivity</div>
+                            <div class="article-preview">The biggest misconception about productivity is that it's about doing more things...</div>
+                            <div class="article-meta">Jan 10 2025 • Published</div>
+                        </div>
+                        <div class="article-actions">
+                            <button class="btn btn-outline btn-sm" onclick="alert('Edit index.html directly to modify this article')">Edit</button>
+                            <button class="btn btn-danger btn-sm" onclick="alert('Remove the article HTML from index.html to delete')">Delete</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-content">
+                    <div class="article-item">
+                        <div class="article-content">
+                            <div class="article-title">The Attention Economy</div>
+                            <div class="article-preview">The internet has democratized access to information, but it has also created an attention economy...</div>
+                            <div class="article-meta">Jan 5 2025 • Published</div>
+                        </div>
+                        <div class="article-actions">
+                            <button class="btn btn-outline btn-sm" onclick="alert('Edit index.html directly to modify this article')">Edit</button>
+                            <button class="btn btn-danger btn-sm" onclick="alert('Remove the article HTML from index.html to delete')">Delete</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Email Setup Tab -->
+        <div class="tab-content" id="subscribers">
+            <div class="section-header">
+                <h2 class="section-title">Email Subscription Setup</h2>
+            </div>
+
+            <div class="card">
+                <div class="card-content">
+                    <h3 style="margin-bottom: 16px;">Setting Up Email Notifications</h3>
+                    <p style="color: #ccc; margin-bottom: 16px;">
+                        Your static website collects email subscriptions, but to send actual emails, you'll need to integrate with an email service. Here are your options:
+                    </p>
+
+                    <div style="background: #1a1a1a; padding: 16px; border-radius: 4px; margin-bottom: 16px;">
+                        <h4 style="margin-bottom: 8px;">Option 1: Formspree (Easiest)</h4>
+                        <p style="color: #ccc; font-size: 14px; margin-bottom: 8px;">Replace the subscription form action with Formspree endpoint:</p>
+                        <code style="background: #000; padding: 8px; display: block; font-size: 12px;">&lt;form action="https://formspree.io/f/YOUR_FORM_ID" method="POST"&gt;</code>
+                    </div>
+
+                    <div style="background: #1a1a1a; padding: 16px; border-radius: 4px; margin-bottom: 16px;">
+                        <h4 style="margin-bottom: 8px;">Option 2: Netlify Forms</h4>
+                        <p style="color: #ccc; font-size: 14px; margin-bottom: 8px;">If you deploy to Netlify instead, add netlify attribute:</p>
+                        <code style="background: #000; padding: 8px; display: block; font-size: 12px;">&lt;form netlify name="newsletter"&gt;</code>
+                    </div>
+
+                    <div style="background: #1a1a1a; padding: 16px; border-radius: 4px; margin-bottom: 16px;">
+                        <h4 style="margin-bottom: 8px;">Option 3: ConvertKit/Mailchimp</h4>
+                        <p style="color: #ccc; font-size: 14px; margin-bottom: 8px;">Replace form with their embed code for professional email management.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-content">
+                    <h3 style="margin-bottom: 16px;">Current Subscribers (Demo)</h3>
+                    <div class="subscriber-list">
+                        <div class="subscriber-item">
+                            <span class="subscriber-email">example@email.com</span>
+                            <span class="subscriber-date">Jan 15, 2025</span>
+                        </div>
+                        <div class="subscriber-item">
+                            <span class="subscriber-email">subscriber@gmail.com</span>
+                            <span class="subscriber-date">Jan 12, 2025</span>
+                        </div>
+                        <div class="subscriber-item">
+                            <span class="subscriber-email">reader@domain.com</span>
+                            <span class="subscriber-date">Jan 10, 2025</span>
+                        </div>
+                    </div>
+                    <p style="color: #666; font-size: 14px; margin-top: 16px;">
+                        Note: In the static version, you'll receive subscription emails directly to your inbox via the form service you choose.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function showTab(tabName) {
+            // Hide all tab contents
+            const contents = document.querySelectorAll('.tab-content');
+            contents.forEach(content => content.classList.remove('active'));
+
+            // Remove active class from all tabs
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+
+            // Show selected tab content
+            document.getElementById(tabName).classList.add('active');
+
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+        }
+
+        function showAddInstructions() {
+            document.getElementById('addInstructions').style.display = 'block';
+        }
+
+        function hideAddInstructions() {
+            document.getElementById('addInstructions').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
