@@ -326,14 +326,19 @@
 document.addEventListener('DOMContentLoaded', function () {
   const adminPassword = 'your-secret-password-123';
 
+  // Check session storage so user isn't prompted repeatedly in same tab
   if (!sessionStorage.getItem('adminAuthorized')) {
-    const userPassword = prompt('Enter admin password:');
-    if (userPassword !== adminPassword) {
-      alert('Access denied');
-      window.location.href = 'index.html';
-      return;
-    }
-    sessionStorage.setItem('adminAuthorized', 'true');
+    // Use setTimeout to delay prompt slightly, helping browsers allow prompt dialogs
+    setTimeout(() => {
+      const userPassword = prompt('Enter admin password:');
+      if (userPassword !== adminPassword) {
+        alert('Access denied');
+        // Redirect to home page or any other safe location
+        window.location.href = 'index.html';
+      } else {
+        sessionStorage.setItem('adminAuthorized', 'true');
+      }
+    }, 100);
   }
 });
 </script>
