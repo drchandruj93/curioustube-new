@@ -323,13 +323,19 @@
 </head>
 <body>
 <script>
-// Simple password protection
-const adminPassword = 'your-secret-password-123';
-const userPassword = prompt('Enter admin password:');
-if (userPassword !== adminPassword) {
-    alert('Access denied');
-    window.location.href = 'index.html';
-}
+document.addEventListener('DOMContentLoaded', function () {
+  const adminPassword = 'your-secret-password-123';
+
+  if (!sessionStorage.getItem('adminAuthorized')) {
+    const userPassword = prompt('Enter admin password:');
+    if (userPassword !== adminPassword) {
+      alert('Access denied');
+      window.location.href = 'index.html';
+      return;
+    }
+    sessionStorage.setItem('adminAuthorized', 'true');
+  }
+});
 </script>
     <header class="header">
         <div class="header-content">
