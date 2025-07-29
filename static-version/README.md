@@ -1,6 +1,6 @@
-# Curioustube - Static Blog Website
+# Curioustube Blog
 
-A minimal, nav.al-inspired blog website designed for Cloudflare Pages deployment.
+A static blog website inspired by Naval Ravikant's design aesthetic. Features a clean, minimalist dark theme with rich text editing, article categorization, search functionality, and professional content management.
 
 ## 🚀 Quick Deploy to Cloudflare Pages
 
@@ -143,10 +143,51 @@ Write like Naval Ravikant:
 - Use simple, clear language
 - End with actionable takeaways
 
+## 📚 New Documentation Guides
+
+### 🔧 For Deployment
+**[GITHUB_DEPLOYMENT_GUIDE.md](GITHUB_DEPLOYMENT_GUIDE.md)**
+- Complete guide: Replit → GitHub → Cloudflare Pages
+- Custom domain setup and email service integration
+- SEO optimization and analytics configuration
+
+### ✏️ For Content Management  
+**[CONTENT_MANAGEMENT_GUIDE.md](CONTENT_MANAGEMENT_GUIDE.md)**
+- Rich text editor with image upload
+- Article categorization and search functionality
+- No-code content creation and organization
+
+### 🔐 For Admin Access
+**[ADMIN_ACCESS_GUIDE.md](ADMIN_ACCESS_GUIDE.md)**
+- Admin panel security and credentials
+- Multiple administrator management
+- Emergency recovery procedures
+
+## 🎯 Enhanced Features
+
+### Rich Text Editor
+- WYSIWYG editing with toolbar
+- Image upload and embedding  
+- Text formatting (bold, italic, headers)
+- Lists, links, code blocks, and quotes
+
+### Search & Organization
+- Real-time search across all articles
+- Category filtering by tags
+- Keyword matching in titles and content
+- Professional tag management system
+
+### Admin Panel Improvements
+- Visual article management interface
+- Edit/delete functionality guidance
+- HTML code generation for articles
+- Form validation and copy-to-clipboard
+
 ## 🆘 Support
 
-- Visit `/admin.html` for detailed content management instructions
+- Check the comprehensive guides above for detailed instructions
+- Visit `/admin.html` for rich text content creation
 - All functionality works without a database
 - Perfect for personal blogs and thought leadership
 
-Start sharing your insights with the world! 🌟
+Start sharing your insights with the world!

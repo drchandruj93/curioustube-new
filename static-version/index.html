@@ -127,6 +127,66 @@
             color: #ffffff;
         }
 
+        /* Search */
+        .search-section {
+            margin-bottom: 48px;
+        }
+
+        .search-container {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .search-input {
+            flex: 1;
+            min-width: 300px;
+            padding: 12px 16px;
+            background: #111;
+            border: 1px solid #333;
+            color: #ffffff;
+            font-size: 16px;
+            border-radius: 4px;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #ffffff;
+        }
+
+        .search-input::placeholder {
+            color: #666;
+        }
+
+        .category-filter {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .category-tag {
+            padding: 6px 12px;
+            background: #111;
+            border: 1px solid #333;
+            color: #666;
+            font-size: 14px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .category-tag.active {
+            background: #ffffff;
+            color: #000000;
+            border-color: #ffffff;
+        }
+
+        .category-tag:hover {
+            border-color: #ffffff;
+            color: #ffffff;
+        }
+
         /* Articles */
         .article {
             border-bottom: 1px solid #333;
@@ -138,10 +198,45 @@
             border-bottom: none;
         }
 
+        .article.hidden {
+            display: none;
+        }
+
+        .article-header {
+            margin-bottom: 16px;
+        }
+
+        .article-title {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+
+        .article-meta {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
         .article-date {
             color: #666;
             font-size: 14px;
-            margin-bottom: 16px;
+        }
+
+        .article-tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .article-tag {
+            background: #222;
+            color: #ccc;
+            padding: 4px 8px;
+            font-size: 12px;
+            border-radius: 12px;
         }
 
         .article-content {
@@ -369,10 +464,39 @@
             </div>
         </section>
 
+        <!-- Search Section -->
+        <section class="search-section">
+            <div class="search-container">
+                <input 
+                    type="text" 
+                    class="search-input" 
+                    placeholder="Search articles..." 
+                    id="searchInput"
+                    oninput="searchArticles()"
+                >
+            </div>
+            <div class="category-filter" id="categoryFilter">
+                <span class="category-tag active" onclick="filterByCategory('all')">All</span>
+                <span class="category-tag" onclick="filterByCategory('productivity')">Productivity</span>
+                <span class="category-tag" onclick="filterByCategory('wisdom')">Wisdom</span>
+                <span class="category-tag" onclick="filterByCategory('business')">Business</span>
+                <span class="category-tag" onclick="filterByCategory('philosophy')">Philosophy</span>
+            </div>
+        </section>
+
         <!-- Articles -->
-        <section class="articles">
-            <article class="article">
-                <div class="article-date">Jan 15 2025</div>
+        <section class="articles" id="articlesContainer">
+            <article class="article" data-category="wisdom philosophy" data-keywords="compound growth patience consistency time wealth wisdom">
+                <div class="article-header">
+                    <h2 class="article-title">The Power of Compound Growth</h2>
+                    <div class="article-meta">
+                        <span class="article-date">Jan 15 2025</span>
+                        <div class="article-tags">
+                            <span class="article-tag">Wisdom</span>
+                            <span class="article-tag">Philosophy</span>
+                        </div>
+                    </div>
+                </div>
                 <div class="article-content">
                     <div class="article-preview">
                         <p>When you truly understand compound growth, you realize that patience isn't just a virtue—it's a superpower. Most people dramatically underestimate the power of consistency over time.</p>
@@ -388,8 +512,17 @@
                 </div>
             </article>
 
-            <article class="article">
-                <div class="article-date">Jan 10 2025</div>
+            <article class="article" data-category="productivity business" data-keywords="productivity optimization efficiency systems elimination focus">
+                <div class="article-header">
+                    <h2 class="article-title">True Productivity</h2>
+                    <div class="article-meta">
+                        <span class="article-date">Jan 10 2025</span>
+                        <div class="article-tags">
+                            <span class="article-tag">Productivity</span>
+                            <span class="article-tag">Business</span>
+                        </div>
+                    </div>
+                </div>
                 <div class="article-content">
                     <div class="article-preview">
                         <p>The biggest misconception about productivity is that it's about doing more things. True productivity is about doing the right things effortlessly.</p>
@@ -405,8 +538,17 @@
                 </div>
             </article>
 
-            <article class="article">
-                <div class="article-date">Jan 5 2025</div>
+            <article class="article" data-category="philosophy wisdom" data-keywords="attention focus deep work distraction internet information economy">
+                <div class="article-header">
+                    <h2 class="article-title">The Attention Economy</h2>
+                    <div class="article-meta">
+                        <span class="article-date">Jan 5 2025</span>
+                        <div class="article-tags">
+                            <span class="article-tag">Philosophy</span>
+                            <span class="article-tag">Wisdom</span>
+                        </div>
+                    </div>
+                </div>
                 <div class="article-content">
                     <div class="article-preview">
                         <p>The internet has democratized access to information, but it has also created an attention economy that profits from distraction.</p>
@@ -527,6 +669,42 @@
                 closeModal();
             }
         });
+
+        // Search and filter functions
+        function searchArticles() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const articles = document.querySelectorAll('.article');
+            
+            articles.forEach(article => {
+                const title = article.querySelector('.article-title').textContent.toLowerCase();
+                const content = article.querySelector('.article-content').textContent.toLowerCase();
+                const keywords = article.dataset.keywords.toLowerCase();
+                
+                if (title.includes(searchTerm) || content.includes(searchTerm) || keywords.includes(searchTerm)) {
+                    article.classList.remove('hidden');
+                } else {
+                    article.classList.add('hidden');
+                }
+            });
+        }
+
+        function filterByCategory(category) {
+            const articles = document.querySelectorAll('.article');
+            const categoryTags = document.querySelectorAll('.category-tag');
+            
+            // Update active category tag
+            categoryTags.forEach(tag => tag.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Filter articles
+            articles.forEach(article => {
+                if (category === 'all' || article.dataset.category.includes(category)) {
+                    article.classList.remove('hidden');
+                } else {
+                    article.classList.add('hidden');
+                }
+            });
+        }
     </script>
 </body>
 </html>
