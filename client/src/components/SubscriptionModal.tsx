@@ -82,10 +82,11 @@ export default function SubscriptionModal({ isOpen, onClose }: SubscriptionModal
           </Button>
           
           <p className="text-xs text-gray-400 text-center">
-            You can unsubscribe at any time.{" "}
-            <a href="#" className="underline hover:text-white transition-colors">
-              Privacy Policy
+            You can{" "}
+            <a href="/unsubscribe" className="underline hover:text-white transition-colors">
+              unsubscribe
             </a>
+            {" "}at any time.
           </p>
         </form>
       </div>

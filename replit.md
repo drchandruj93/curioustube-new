@@ -7,6 +7,10 @@ This is a full-stack web application built with React and Express.js that serves
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
+Domain: Curioustube.com
+Design inspiration: nav.al (Naval Ravikant's website)
+Deployment target: Cloudflare Pages (free hosting)
+Theme: Pure black background with white text for maximum readability
 
 ## System Architecture
 
@@ -99,3 +103,25 @@ The application is configured for multiple deployment scenarios:
 - Migration commands via `db:push` script
 
 The application is designed to work seamlessly in Replit's environment while maintaining compatibility with standard Node.js deployment platforms.
+
+## Cloudflare Pages Deployment
+
+The application includes deployment configuration for Cloudflare Pages:
+
+### Build Configuration
+- Custom build script (`build.js`) handles client and server bundling
+- Generates static React app and serverless functions
+- Creates `_routes.json` for proper API routing on Cloudflare
+- Production-optimized bundle with external dependencies
+
+### Deployment Files
+- `wrangler.toml` - Cloudflare Workers configuration
+- `_routes.json` - API routing configuration
+- `CLOUDFLARE_DEPLOYMENT.md` - Step-by-step deployment guide
+- `build.js` - Custom build script for static generation + serverless functions
+
+### Email System
+- Subscription collection via modal interface
+- Admin dashboard for subscriber management
+- Ready for integration with Resend, Mailgun, or SendGrid
+- Unsubscribe functionality with dedicated endpoints
