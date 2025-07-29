@@ -1,656 +1,882 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - Curioustube</title>
-    <meta name="description" content="Manage Curioustube content">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin - Curioustube</title>
+  <meta name="description" content="Manage Curioustube content" />
+  
+  <!-- Rich Text Editor -->
+  <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+  <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet" />
+  
+  <style>
+    /* Password modal styles */
+    #passwordModal {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.9);
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      z-index: 9999;
+    }
+    #passwordModalContent {
+      background: #111;
+      padding: 24px;
+      border-radius: 8px;
+      max-width: 320px;
+      width: 100%;
+      box-sizing: border-box;
+      box-shadow: 0 0 10px #000;
+    }
+    #passwordModalContent label {
+      font-weight: 600;
+      margin-bottom: 8px;
+      display: block;
+    }
+    #passwordInput {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #333;
+      border-radius: 4px;
+      font-size: 16px;
+      background: #000;
+      color: #fff;
+      box-sizing: border-box;
+    }
+    #passwordSubmit {
+      margin-top: 12px;
+      width: 100%;
+      background: #fff;
+      color: #000;
+      border: none;
+      padding: 12px;
+      font-weight: 600;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: background-color 0.3s;
+    }
+    #passwordSubmit:hover {
+      background: #ddd;
+    }
+    /* Hide the main content until authorized */
+    #adminContent {
+      display: none;
+    }
+
+    /* Quill Editor Dark Theme Override */
+    .ql-toolbar.ql-snow {
+      border: 1px solid #333 !important;
+      background: #111 !important;
+    }
     
-    <!-- Rich Text Editor -->
-    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
-    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    .ql-toolbar.ql-snow .ql-stroke {
+      stroke: #ccc !important;
+    }
     
-    <style>
-        /* Quill Editor Dark Theme Override */
-        .ql-toolbar.ql-snow {
-            border: 1px solid #333 !important;
-            background: #111 !important;
-        }
-        
-        .ql-toolbar.ql-snow .ql-stroke {
-            stroke: #ccc !important;
-        }
-        
-        .ql-toolbar.ql-snow .ql-fill {
-            fill: #ccc !important;
-        }
-        
-        .ql-container.ql-snow {
-            border: 1px solid #333 !important;
-            background: #000 !important;
-            color: #fff !important;
-        }
-        
-        .ql-editor {
-            color: #fff !important;
-        }
-        
-        .ql-editor.ql-blank::before {
-            color: #666 !important;
-        }
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+    .ql-toolbar.ql-snow .ql-fill {
+      fill: #ccc !important;
+    }
+    
+    .ql-container.ql-snow {
+      border: 1px solid #333 !important;
+      background: #000 !important;
+      color: #fff !important;
+    }
+    
+    .ql-editor {
+      color: #fff !important;
+    }
+    
+    .ql-editor.ql-blank::before {
+      color: #666 !important;
+    }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background-color: #000000;
-            color: #ffffff;
-            line-height: 1.6;
-            min-height: 100vh;
-        }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: #000000;
+      color: #ffffff;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
 
-        .header {
-            border-bottom: 1px solid #333;
-            padding: 24px 16px;
-        }
+    .header {
+      border-bottom: 1px solid #333;
+      padding: 24px 16px;
+    }
 
-        .header-content {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
+    .header-content {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
 
-        .logo {
-            font-size: 24px;
-            font-weight: bold;
-            color: #ffffff;
-        }
+    .logo {
+      font-size: 24px;
+      font-weight: bold;
+      color: #ffffff;
+    }
 
-        .main {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 32px 16px;
-        }
+    .main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 32px 16px;
+    }
 
-        .tabs {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 32px;
-            border-bottom: 1px solid #333;
-        }
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 32px;
+      border-bottom: 1px solid #333;
+    }
 
-        .tab {
-            padding: 12px 24px;
-            background: none;
-            border: none;
-            color: #666;
-            cursor: pointer;
-            font-size: 16px;
-            transition: color 0.3s;
-            border-bottom: 2px solid transparent;
-        }
+    .tab {
+      padding: 12px 24px;
+      background: none;
+      border: none;
+      color: #666;
+      cursor: pointer;
+      font-size: 16px;
+      transition: color 0.3s;
+      border-bottom: 2px solid transparent;
+    }
 
-        .tab.active {
-            color: #ffffff;
-            border-bottom-color: #ffffff;
-        }
+    .tab.active {
+      color: #ffffff;
+      border-bottom-color: #ffffff;
+    }
 
-        .tab:hover {
-            color: #ffffff;
-        }
+    .tab:hover {
+      color: #ffffff;
+    }
 
-        .tab-content {
-            display: none;
-        }
+    .tab-content {
+      display: none;
+    }
 
-        .tab-content.active {
-            display: block;
-        }
+    .tab-content.active {
+      display: block;
+    }
 
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-        }
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
 
-        .section-title {
-            font-size: 20px;
-            font-weight: 600;
-        }
+    .section-title {
+      font-size: 20px;
+      font-weight: 600;
+    }
 
-        .btn {
-            padding: 8px 16px;
-            background: #ffffff;
-            color: #000000;
-            border: none;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
-            transition: background-color 0.3s;
-            border-radius: 4px;
-        }
+    .btn {
+      padding: 8px 16px;
+      background: #ffffff;
+      color: #000000;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: background-color 0.3s;
+      border-radius: 4px;
+    }
 
-        .btn:hover {
-            background: #e5e5e5;
-        }
+    .btn:hover {
+      background: #e5e5e5;
+    }
 
-        .btn-outline {
-            background: none;
-            color: #666;
-            border: 1px solid #333;
-        }
+    .btn-outline {
+      background: none;
+      color: #666;
+      border: 1px solid #333;
+    }
 
-        .btn-outline:hover {
-            background: #333;
-            color: #ffffff;
-        }
+    .btn-outline:hover {
+      background: #333;
+      color: #ffffff;
+    }
 
-        .btn-danger {
-            background: none;
-            color: #ff6b6b;
-            border: 1px solid #ff6b6b;
-        }
+    .btn-danger {
+      background: none;
+      color: #ff6b6b;
+      border: 1px solid #ff6b6b;
+    }
 
-        .btn-danger:hover {
-            background: #ff6b6b;
-            color: #ffffff;
-        }
+    .btn-danger:hover {
+      background: #ff6b6b;
+      color: #ffffff;
+    }
 
-        .card {
-            background: #111111;
-            border: 1px solid #333;
-            border-radius: 8px;
-            margin-bottom: 16px;
-        }
+    .card {
+      background: #111111;
+      border: 1px solid #333;
+      border-radius: 8px;
+      margin-bottom: 16px;
+    }
 
-        .card-content {
-            padding: 24px;
-        }
+    .card-content {
+      padding: 24px;
+    }
 
-        .form-group {
-            margin-bottom: 16px;
-        }
+    .form-group {
+      margin-bottom: 16px;
+    }
 
-        .form-label {
-            display: block;
-            margin-bottom: 4px;
-            font-weight: 500;
-        }
+    .form-label {
+      display: block;
+      margin-bottom: 4px;
+      font-weight: 500;
+    }
 
-        .form-input, .form-textarea {
-            width: 100%;
-            padding: 12px;
-            background: #000000;
-            border: 1px solid #333;
-            color: #ffffff;
-            font-size: 16px;
-            border-radius: 4px;
-            font-family: inherit;
-        }
+    .form-input,
+    .form-textarea {
+      width: 100%;
+      padding: 12px;
+      background: #000000;
+      border: 1px solid #333;
+      color: #ffffff;
+      font-size: 16px;
+      border-radius: 4px;
+      font-family: inherit;
+    }
 
-        .form-textarea {
-            min-height: 120px;
-            resize: vertical;
-        }
+    .form-textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
 
-        .form-input:focus, .form-textarea:focus {
-            outline: none;
-            border-color: #ffffff;
-        }
+    .form-input:focus,
+    .form-textarea:focus {
+      outline: none;
+      border-color: #ffffff;
+    }
 
-        .form-input::placeholder, .form-textarea::placeholder {
-            color: #666;
-        }
+    .form-input::placeholder,
+    .form-textarea::placeholder {
+      color: #666;
+    }
 
-        .form-actions {
-            display: flex;
-            gap: 8px;
-            margin-top: 16px;
-        }
+    .form-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 16px;
+    }
 
-        .article-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            gap: 16px;
-        }
+    .article-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+    }
 
-        .article-content {
-            flex: 1;
-        }
+    .article-content {
+      flex: 1;
+    }
 
-        .article-title {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
+    .article-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
 
-        .article-preview {
-            color: #666;
-            margin-bottom: 8px;
-        }
+    .article-preview {
+      color: #666;
+      margin-bottom: 8px;
+    }
 
-        .article-meta {
-            font-size: 14px;
-            color: #666;
-        }
+    .article-meta {
+      font-size: 14px;
+      color: #666;
+    }
 
-        .article-actions {
-            display: flex;
-            gap: 8px;
-        }
+    .article-actions {
+      display: flex;
+      gap: 8px;
+    }
 
-        .btn-sm {
-            padding: 6px 12px;
-            font-size: 12px;
-        }
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 12px;
+    }
 
-        .subscriber-list {
-            background: #000000;
-            border-radius: 4px;
-            padding: 16px;
-        }
+    .subscriber-list {
+      background: #000000;
+      border-radius: 4px;
+      padding: 16px;
+    }
 
-        .subscriber-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px;
-            background: #111111;
-            border-radius: 4px;
-            margin-bottom: 8px;
-        }
+    .subscriber-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px;
+      background: #111111;
+      border-radius: 4px;
+      margin-bottom: 8px;
+    }
 
-        .subscriber-item:last-child {
-            margin-bottom: 0;
-        }
+    .subscriber-item:last-child {
+      margin-bottom: 0;
+    }
 
-        .subscriber-email {
-            color: #ffffff;
-        }
+    .subscriber-email {
+      color: #ffffff;
+    }
 
-        .subscriber-date {
-            color: #666;
-            font-size: 14px;
-        }
+    .subscriber-date {
+      color: #666;
+      font-size: 14px;
+    }
 
-        .instructions {
-            background: #1a1a1a;
-            border: 1px solid #333;
-            border-radius: 8px;
-            padding: 24px;
-            margin-bottom: 32px;
-        }
+    .instructions {
+      background: #1a1a1a;
+      border: 1px solid #333;
+      border-radius: 8px;
+      padding: 24px;
+      margin-bottom: 32px;
+    }
 
-        .instructions h3 {
-            margin-bottom: 16px;
-            color: #ffffff;
-        }
+    .instructions h3 {
+      margin-bottom: 16px;
+      color: #ffffff;
+    }
 
-        .instructions p {
-            color: #ccc;
-            margin-bottom: 12px;
-        }
+    .instructions p {
+      color: #ccc;
+      margin-bottom: 12px;
+    }
 
-        .instructions code {
-            background: #000;
-            padding: 2px 6px;
-            border-radius: 3px;
-            font-family: 'Monaco', 'Consolas', monospace;
-            font-size: 14px;
-        }
+    .instructions code {
+      background: #000;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-family: 'Monaco', 'Consolas', monospace;
+      font-size: 14px;
+    }
 
-        @media (max-width: 768px) {
-            .section-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 16px;
-            }
+    @media (max-width: 768px) {
+      .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+      }
 
-            .article-item {
-                flex-direction: column;
-                align-items: flex-start;
-            }
+      .article-item {
+        flex-direction: column;
+        align-items: flex-start;
+      }
 
-            .tabs {
-                overflow-x: auto;
-            }
-        }
-    </style>
+      .tabs {
+        overflow-x: auto;
+      }
+    }
+  </style>
 </head>
 <body>
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-  const adminPassword = 'your-secret-password-123';
+  <!-- Password modal and script -->
+  <div id="passwordModal" role="dialog" aria-modal="true" aria-labelledby="passwordLabel">
+    <div id="passwordModalContent">
+      <label id="passwordLabel" for="passwordInput">Enter Admin Password:</label>
+      <input type="password" id="passwordInput" autocomplete="off" autofocus />
+      <button id="passwordSubmit">Submit</button>
+    </div>
+  </div>
 
-  // Check session storage so user isn't prompted repeatedly in same tab
-  if (!sessionStorage.getItem('adminAuthorized')) {
-    // Use setTimeout to delay prompt slightly, helping browsers allow prompt dialogs
-    setTimeout(() => {
-      const userPassword = prompt('Enter admin password:');
-      if (userPassword !== adminPassword) {
-        alert('Access denied');
-        // Redirect to home page or any other safe location
-        window.location.href = 'index.html';
-      } else {
-        sessionStorage.setItem('adminAuthorized', 'true');
+  <script>
+    (function () {
+      const adminPassword = 'your-secret-password-123'; // Change this to your real password
+      const modal = document.getElementById('passwordModal');
+      const passwordInput = document.getElementById('passwordInput');
+      const submitBtn = document.getElementById('passwordSubmit');
+      const adminContent = document.getElementById('adminContent');
+
+      function showAdmin() {
+        modal.style.display = 'none';
+        adminContent.style.display = 'block';
       }
-    }, 100);
-  }
-});
-</script>
+
+      function denyAccess() {
+        alert('Access denied');
+        window.location.href = 'index.html'; // Redirect or modify as needed
+      }
+
+      function checkPassword() {
+        const entered = passwordInput.value;
+        if (entered === adminPassword) {
+          sessionStorage.setItem('adminAuthorized', 'true');
+          showAdmin();
+        } else {
+          denyAccess();
+        }
+      }
+
+      submitBtn.addEventListener('click', checkPassword);
+      passwordInput.addEventListener('keydown', function (event) {
+        if (event.key === 'Enter') {
+          checkPassword();
+        }
+      });
+
+      document.addEventListener('DOMContentLoaded', function () {
+        if (sessionStorage.getItem('adminAuthorized') === 'true') {
+          showAdmin();
+        } else {
+          modal.style.display = 'flex';
+          adminContent.style.display = 'none';
+          passwordInput.focus();
+        }
+      });
+    })();
+  </script>
+
+  <!-- Wrap your admin page content inside this div -->
+  <div id="adminContent">
     <header class="header">
-        <div class="header-content">
-            <h1 class="logo">Curioustube Admin</h1>
-        </div>
+      <div class="header-content">
+        <h1 class="logo">Curioustube Admin</h1>
+      </div>
     </header>
 
     <main class="main">
-        <div class="instructions">
-            <h3>Static Website Management</h3>
-            <p>This is a static version of your admin panel. To add new articles or manage content:</p>
-            <p>1. Edit the <code>index.html</code> file directly</p>
-            <p>2. Add new article HTML in the articles section</p>
-            <p>3. Update dates and content as needed</p>
-            <p>4. Commit changes to GitHub and redeploy to Cloudflare Pages</p>
+      <div class="instructions">
+        <h3>Static Website Management</h3>
+        <p>This is a static version of your admin panel. To add new articles or manage content:</p>
+        <p>1. Edit the <code>index.html</code> file directly</p>
+        <p>2. Add new article HTML in the articles section</p>
+        <p>3. Update dates and content as needed</p>
+        <p>4. Commit changes to GitHub and redeploy to Cloudflare Pages</p>
+      </div>
+
+      <div class="tabs">
+        <button class="tab active" onclick="showTab('articles')">Articles</button>
+        <button class="tab" onclick="showTab('create')">Create Article</button>
+        <button class="tab" onclick="showTab('subscribers')">Email Setup</button>
+      </div>
+
+      <!-- Articles Tab -->
+      <div class="tab-content active" id="articles">
+        <div class="section-header">
+          <h2 class="section-title">Current Articles</h2>
+          <button class="btn" onclick="showTab('create')">Create New Article</button>
         </div>
 
-        <div class="tabs">
-            <button class="tab active" onclick="showTab('articles')">Articles</button>
-            <button class="tab" onclick="showTab('create')">Create Article</button>
-            <button class="tab" onclick="showTab('subscribers')">Email Setup</button>
+        <div class="card">
+          <div class="card-content">
+            <div class="article-item">
+              <div class="article-content">
+                <div class="article-title">The Power of Compound Growth</div>
+                <div class="article-preview">
+                  When you truly understand compound growth, you realize that patience isn't just a
+                  virtue—it's a superpower...
+                </div>
+                <div class="article-meta">Jan 15 2025 • Published • Tags: Wisdom, Philosophy</div>
+              </div>
+              <div class="article-actions">
+                <button
+                  class="btn btn-outline btn-sm"
+                  onclick="editArticle('compound-growth')"
+                >
+                  Edit
+                </button>
+                <button
+                  class="btn btn-danger btn-sm"
+                  onclick="deleteArticle('compound-growth')"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <!-- Articles Tab -->
-        <div class="tab-content active" id="articles">
-            <div class="section-header">
-                <h2 class="section-title">Current Articles</h2>
-                <button class="btn" onclick="showTab('create')">Create New Article</button>
-            </div>
-
-            <div class="card">
-                <div class="card-content">
-                    <div class="article-item">
-                        <div class="article-content">
-                            <div class="article-title">The Power of Compound Growth</div>
-                            <div class="article-preview">When you truly understand compound growth, you realize that patience isn't just a virtue—it's a superpower...</div>
-                            <div class="article-meta">Jan 15 2025 • Published • Tags: Wisdom, Philosophy</div>
-                        </div>
-                        <div class="article-actions">
-                            <button class="btn btn-outline btn-sm" onclick="editArticle('compound-growth')">Edit</button>
-                            <button class="btn btn-danger btn-sm" onclick="deleteArticle('compound-growth')">Delete</button>
-                        </div>
-                    </div>
+        <div class="card">
+          <div class="card-content">
+            <div class="article-item">
+              <div class="article-content">
+                <div class="article-title">True Productivity</div>
+                <div class="article-preview">
+                  The biggest misconception about productivity is that it's about doing more things...
                 </div>
+                <div class="article-meta">Jan 10 2025 • Published • Tags: Productivity, Business</div>
+              </div>
+              <div class="article-actions">
+                <button
+                  class="btn btn-outline btn-sm"
+                  onclick="editArticle('true-productivity')"
+                >
+                  Edit
+                </button>
+                <button
+                  class="btn btn-danger btn-sm"
+                  onclick="deleteArticle('true-productivity')"
+                >
+                  Delete
+                </button>
+              </div>
             </div>
-
-            <div class="card">
-                <div class="card-content">
-                    <div class="article-item">
-                        <div class="article-content">
-                            <div class="article-title">True Productivity</div>
-                            <div class="article-preview">The biggest misconception about productivity is that it's about doing more things...</div>
-                            <div class="article-meta">Jan 10 2025 • Published • Tags: Productivity, Business</div>
-                        </div>
-                        <div class="article-actions">
-                            <button class="btn btn-outline btn-sm" onclick="editArticle('true-productivity')">Edit</button>
-                            <button class="btn btn-danger btn-sm" onclick="deleteArticle('true-productivity')">Delete</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-content">
-                    <div class="article-item">
-                        <div class="article-content">
-                            <div class="article-title">The Attention Economy</div>
-                            <div class="article-preview">The internet has democratized access to information, but it has also created an attention economy...</div>
-                            <div class="article-meta">Jan 5 2025 • Published • Tags: Philosophy, Wisdom</div>
-                        </div>
-                        <div class="article-actions">
-                            <button class="btn btn-outline btn-sm" onclick="editArticle('attention-economy')">Edit</button>
-                            <button class="btn btn-danger btn-sm" onclick="deleteArticle('attention-economy')">Delete</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+          </div>
         </div>
 
-        <!-- Create Article Tab -->
-        <div class="tab-content" id="create">
-            <div class="section-header">
-                <h2 class="section-title">Create New Article</h2>
-            </div>
-
-            <form id="articleForm" onsubmit="generateArticleHTML(event)">
-                <div class="card">
-                    <div class="card-content">
-                        <div class="form-group">
-                            <label class="form-label">Article Title</label>
-                            <input type="text" class="form-input" id="articleTitle" placeholder="Enter article title" required>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label">Categories/Tags (comma separated)</label>
-                            <input type="text" class="form-input" id="articleTags" placeholder="productivity, wisdom, business" required>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label">Article Preview (shown on homepage)</label>
-                            <textarea class="form-textarea" id="articlePreview" placeholder="Write a compelling preview that makes readers want to click 'More'..." required></textarea>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label">Full Article Content</label>
-                            <div id="editor" style="height: 300px;"></div>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label">Publication Date</label>
-                            <input type="date" class="form-input" id="articleDate" required>
-                        </div>
-
-                        <div class="form-actions">
-                            <button type="submit" class="btn">Generate HTML Code</button>
-                            <button type="button" class="btn btn-outline" onclick="clearForm()">Clear Form</button>
-                        </div>
-                    </div>
+        <div class="card">
+          <div class="card-content">
+            <div class="article-item">
+              <div class="article-content">
+                <div class="article-title">The Attention Economy</div>
+                <div class="article-preview">
+                  The internet has democratized access to information, but it has also created an
+                  attention economy...
                 </div>
-            </form>
-
-            <!-- Generated HTML Output -->
-            <div id="generatedHTML" style="display: none;" class="card">
-                <div class="card-content">
-                    <h3 style="margin-bottom: 16px;">Generated HTML Code</h3>
-                    <p style="color: #ccc; margin-bottom: 16px;">Copy this code and paste it as the first article in the articles section of index.html:</p>
-                    <div style="position: relative;">
-                        <pre id="htmlOutput" style="background: #000; padding: 16px; border-radius: 4px; overflow-x: auto; font-size: 14px; color: #ccc; margin-bottom: 16px; white-space: pre-wrap;"></pre>
-                        <button class="btn btn-outline" onclick="copyHTML()" style="position: absolute; top: 8px; right: 8px;">Copy</button>
-                    </div>
-                    <div class="form-actions">
-                        <button class="btn btn-outline" onclick="hideGeneratedHTML()">Close</button>
-                        <button class="btn" onclick="createNewArticle()">Create Another Article</button>
-                    </div>
-                </div>
+                <div class="article-meta">Jan 5 2025 • Published • Tags: Philosophy, Wisdom</div>
+              </div>
+              <div class="article-actions">
+                <button
+                  class="btn btn-outline btn-sm"
+                  onclick="editArticle('attention-economy')"
+                >
+                  Edit
+                </button>
+                <button
+                  class="btn btn-danger btn-sm"
+                  onclick="deleteArticle('attention-economy')"
+                >
+                  Delete
+                </button>
+              </div>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Create Article Tab -->
+      <div class="tab-content" id="create">
+        <div class="section-header">
+          <h2 class="section-title">Create New Article</h2>
         </div>
 
-            <div class="card">
-                <div class="card-content">
-                    <div class="article-item">
-                        <div class="article-content">
-                            <div class="article-title">The Power of Compound Growth</div>
-                            <div class="article-preview">When you truly understand compound growth, you realize that patience isn't just a virtue—it's a superpower...</div>
-                            <div class="article-meta">Jan 15 2025 • Published</div>
-                        </div>
-                        <div class="article-actions">
-                            <button class="btn btn-outline btn-sm" onclick="alert('Edit index.html directly to modify this article')">Edit</button>
-                            <button class="btn btn-danger btn-sm" onclick="alert('Remove the article HTML from index.html to delete')">Delete</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <form id="articleForm" onsubmit="generateArticleHTML(event)">
+          <div class="card">
+            <div class="card-content">
+              <div class="form-group">
+                <label class="form-label">Article Title</label>
+                <input
+                  type="text"
+                  class="form-input"
+                  id="articleTitle"
+                  placeholder="Enter article title"
+                  required
+                />
+              </div>
 
-            <div class="card">
-                <div class="card-content">
-                    <div class="article-item">
-                        <div class="article-content">
-                            <div class="article-title">True Productivity</div>
-                            <div class="article-preview">The biggest misconception about productivity is that it's about doing more things...</div>
-                            <div class="article-meta">Jan 10 2025 • Published</div>
-                        </div>
-                        <div class="article-actions">
-                            <button class="btn btn-outline btn-sm" onclick="alert('Edit index.html directly to modify this article')">Edit</button>
-                            <button class="btn btn-danger btn-sm" onclick="alert('Remove the article HTML from index.html to delete')">Delete</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+              <div class="form-group">
+                <label class="form-label">Categories/Tags (comma separated)</label>
+                <input
+                  type="text"
+                  class="form-input"
+                  id="articleTags"
+                  placeholder="productivity, wisdom, business"
+                  required
+                />
+              </div>
 
-            <div class="card">
-                <div class="card-content">
-                    <div class="article-item">
-                        <div class="article-content">
-                            <div class="article-title">The Attention Economy</div>
-                            <div class="article-preview">The internet has democratized access to information, but it has also created an attention economy...</div>
-                            <div class="article-meta">Jan 5 2025 • Published</div>
-                        </div>
-                        <div class="article-actions">
-                            <button class="btn btn-outline btn-sm" onclick="alert('Edit index.html directly to modify this article')">Edit</button>
-                            <button class="btn btn-danger btn-sm" onclick="alert('Remove the article HTML from index.html to delete')">Delete</button>
-                        </div>
-                    </div>
-                </div>
+              <div class="form-group">
+                <label class="form-label">Article Preview (shown on homepage)</label>
+                <textarea
+                  class="form-textarea"
+                  id="articlePreview"
+                  placeholder="Write a compelling preview that makes readers want to click 'More'..."
+                  required
+                ></textarea>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Full Article Content</label>
+                <div id="editor" style="height: 300px;"></div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Publication Date</label>
+                <input type="date" class="form-input" id="articleDate" required />
+              </div>
+
+              <div class="form-actions">
+                <button type="submit" class="btn">Generate HTML Code</button>
+                <button type="button" class="btn btn-outline" onclick="clearForm()">
+                  Clear Form
+                </button>
+              </div>
             </div>
+          </div>
+        </form>
+
+        <!-- Generated HTML Output -->
+        <div id="generatedHTML" style="display: none;" class="card">
+          <div class="card-content">
+            <h3 style="margin-bottom: 16px;">Generated HTML Code</h3>
+            <p style="color: #ccc; margin-bottom: 16px;">
+              Copy this code and paste it as the first article in the articles section of index.html:
+            </p>
+            <div style="position: relative;">
+              <pre
+                id="htmlOutput"
+                style="background: #000; padding: 16px; border-radius: 4px; overflow-x: auto; font-size: 14px; color: #ccc; margin-bottom: 16px; white-space: pre-wrap;"
+              ></pre>
+              <button
+                class="btn btn-outline"
+                onclick="copyHTML()"
+                style="position: absolute; top: 8px; right: 8px"
+              >
+                Copy
+              </button>
+            </div>
+            <div class="form-actions">
+              <button class="btn btn-outline" onclick="hideGeneratedHTML()">Close</button>
+              <button class="btn" onclick="createNewArticle()">Create Another Article</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-content">
+          <div class="article-item">
+            <div class="article-content">
+              <div class="article-title">The Power of Compound Growth</div>
+              <div class="article-preview">
+                When you truly understand compound growth, you realize that patience isn't just a
+                virtue—it's a superpower...
+              </div>
+              <div class="article-meta">Jan 15 2025 • Published</div>
+            </div>
+            <div class="article-actions">
+              <button
+                class="btn btn-outline btn-sm"
+                onclick="alert('Edit index.html directly to modify this article')"
+              >
+                Edit
+              </button>
+              <button
+                class="btn btn-danger btn-sm"
+                onclick="alert('Remove the article HTML from index.html to delete')"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-content">
+          <div class="article-item">
+            <div class="article-content">
+              <div class="article-title">True Productivity</div>
+              <div class="article-preview">
+                The biggest misconception about productivity is that it's about doing more things...
+              </div>
+              <div class="article-meta">Jan 10 2025 • Published</div>
+            </div>
+            <div class="article-actions">
+              <button
+                class="btn btn-outline btn-sm"
+                onclick="alert('Edit index.html directly to modify this article')"
+              >
+                Edit
+              </button>
+              <button
+                class="btn btn-danger btn-sm"
+                onclick="alert('Remove the article HTML from index.html to delete')"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-content">
+          <div class="article-item">
+            <div class="article-content">
+              <div class="article-title">The Attention Economy</div>
+              <div class="article-preview">
+                The internet has democratized access to information, but it has also created an
+                attention economy...
+              </div>
+              <div class="article-meta">Jan 5 2025 • Published</div>
+            </div>
+            <div class="article-actions">
+              <button
+                class="btn btn-outline btn-sm"
+                onclick="alert('Edit index.html directly to modify this article')"
+              >
+                Edit
+              </button>
+              <button
+                class="btn btn-danger btn-sm"
+                onclick="alert('Remove the article HTML from index.html to delete')"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Email Setup Tab -->
+      <div class="tab-content" id="subscribers">
+        <div class="section-header">
+          <h2 class="section-title">Email Subscription Setup</h2>
         </div>
 
-        <!-- Email Setup Tab -->
-        <div class="tab-content" id="subscribers">
-            <div class="section-header">
-                <h2 class="section-title">Email Subscription Setup</h2>
+        <div class="card">
+          <div class="card-content">
+            <h3 style="margin-bottom: 16px;">Setting Up Email Notifications</h3>
+            <p style="color: #ccc; margin-bottom: 16px;">
+              Your static website collects email subscriptions, but to send actual emails, you'll
+              need to integrate with an email service. Here are your options:
+            </p>
+
+            <div
+              style="background: #1a1a1a; padding: 16px; border-radius: 4px; margin-bottom: 16px"
+            >
+              <h4 style="margin-bottom: 8px">Option 1: Formspree (Easiest)</h4>
+              <p style="color: #ccc; font-size: 14px; margin-bottom: 8px">
+                Replace the subscription form action with Formspree endpoint:
+              </p>
+              <code
+                style="background: #000; padding: 8px; display: block; font-size: 12px"
+                >&lt;form action="https://formspree.io/f/YOUR_FORM_ID" method="POST"&gt;</code
+              >
             </div>
 
-            <div class="card">
-                <div class="card-content">
-                    <h3 style="margin-bottom: 16px;">Setting Up Email Notifications</h3>
-                    <p style="color: #ccc; margin-bottom: 16px;">
-                        Your static website collects email subscriptions, but to send actual emails, you'll need to integrate with an email service. Here are your options:
-                    </p>
-
-                    <div style="background: #1a1a1a; padding: 16px; border-radius: 4px; margin-bottom: 16px;">
-                        <h4 style="margin-bottom: 8px;">Option 1: Formspree (Easiest)</h4>
-                        <p style="color: #ccc; font-size: 14px; margin-bottom: 8px;">Replace the subscription form action with Formspree endpoint:</p>
-                        <code style="background: #000; padding: 8px; display: block; font-size: 12px;">&lt;form action="https://formspree.io/f/YOUR_FORM_ID" method="POST"&gt;</code>
-                    </div>
-
-                    <div style="background: #1a1a1a; padding: 16px; border-radius: 4px; margin-bottom: 16px;">
-                        <h4 style="margin-bottom: 8px;">Option 2: Netlify Forms</h4>
-                        <p style="color: #ccc; font-size: 14px; margin-bottom: 8px;">If you deploy to Netlify instead, add netlify attribute:</p>
-                        <code style="background: #000; padding: 8px; display: block; font-size: 12px;">&lt;form netlify name="newsletter"&gt;</code>
-                    </div>
-
-                    <div style="background: #1a1a1a; padding: 16px; border-radius: 4px; margin-bottom: 16px;">
-                        <h4 style="margin-bottom: 8px;">Option 3: ConvertKit/Mailchimp</h4>
-                        <p style="color: #ccc; font-size: 14px; margin-bottom: 8px;">Replace form with their embed code for professional email management.</p>
-                    </div>
-                </div>
+            <div
+              style="background: #1a1a1a; padding: 16px; border-radius: 4px; margin-bottom: 16px"
+            >
+              <h4 style="margin-bottom: 8px">Option 2: Netlify Forms</h4>
+              <p style="color: #ccc; font-size: 14px; margin-bottom: 8px">
+                If you deploy to Netlify instead, add netlify attribute:
+              </p>
+              <code
+                style="background: #000; padding: 8px; display: block; font-size: 12px"
+                >&lt;form netlify name="newsletter"&gt;</code
+              >
             </div>
 
-            <div class="card">
-                <div class="card-content">
-                    <h3 style="margin-bottom: 16px;">Current Subscribers (Demo)</h3>
-                    <div class="subscriber-list">
-                        <div class="subscriber-item">
-                            <span class="subscriber-email">example@email.com</span>
-                            <span class="subscriber-date">Jan 15, 2025</span>
-                        </div>
-                        <div class="subscriber-item">
-                            <span class="subscriber-email">subscriber@gmail.com</span>
-                            <span class="subscriber-date">Jan 12, 2025</span>
-                        </div>
-                        <div class="subscriber-item">
-                            <span class="subscriber-email">reader@domain.com</span>
-                            <span class="subscriber-date">Jan 10, 2025</span>
-                        </div>
-                    </div>
-                    <p style="color: #666; font-size: 14px; margin-top: 16px;">
-                        Note: In the static version, you'll receive subscription emails directly to your inbox via the form service you choose.
-                    </p>
-                </div>
+            <div
+              style="background: #1a1a1a; padding: 16px; border-radius: 4px; margin-bottom: 16px"
+            >
+              <h4 style="margin-bottom: 8px">Option 3: ConvertKit/Mailchimp</h4>
+              <p style="color: #ccc; font-size: 14px; margin-bottom: 8px">
+                Replace form with their embed code for professional email management.
+              </p>
             </div>
+          </div>
         </div>
+
+        <div class="card">
+          <div class="card-content">
+            <h3 style="margin-bottom: 16px">Current Subscribers (Demo)</h3>
+            <div class="subscriber-list">
+              <div class="subscriber-item">
+                <span class="subscriber-email">example@email.com</span>
+                <span class="subscriber-date">Jan 15, 2025</span>
+              </div>
+              <div class="subscriber-item">
+                <span class="subscriber-email">subscriber@gmail.com</span>
+                <span class="subscriber-date">Jan 12, 2025</span>
+              </div>
+              <div class="subscriber-item">
+                <span class="subscriber-email">reader@domain.com</span>
+                <span class="subscriber-date">Jan 10, 2025</span>
+              </div>
+            </div>
+            <p style="color: #666; font-size: 14px; margin-top: 16px">
+              Note: In the static version, you'll receive subscription emails directly to your
+              inbox via the form service you choose.
+            </p>
+          </div>
+        </div>
+      </div>
     </main>
 
     <script>
-        let quill;
+      let quill;
 
-        // Initialize Rich Text Editor
-        document.addEventListener('DOMContentLoaded', function() {
-            quill = new Quill('#editor', {
-                theme: 'snow',
-                placeholder: 'Write your article content here...',
-                modules: {
-                    toolbar: [
-                        [{ 'header': [1, 2, 3, false] }],
-                        ['bold', 'italic', 'underline'],
-                        ['blockquote', 'code-block'],
-                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                        ['link', 'image'],
-                        ['clean']
-                    ]
-                }
-            });
-
-            // Set today's date as default
-            document.getElementById('articleDate').valueAsDate = new Date();
+      // Initialize Rich Text Editor
+      document.addEventListener('DOMContentLoaded', function () {
+        quill = new Quill('#editor', {
+          theme: 'snow',
+          placeholder: 'Write your article content here...',
+          modules: {
+            toolbar: [
+              [{ header: [1, 2, 3, false] }],
+              ['bold', 'italic', 'underline'],
+              ['blockquote', 'code-block'],
+              [{ list: 'ordered' }, { list: 'bullet' }],
+              ['link', 'image'],
+              ['clean'],
+            ],
+          },
         });
 
-        function showTab(tabName) {
-            // Hide all tab contents
-            const contents = document.querySelectorAll('.tab-content');
-            contents.forEach(content => content.classList.remove('active'));
+        // Set today's date as default
+        document.getElementById('articleDate').valueAsDate = new Date();
+      });
 
-            // Remove active class from all tabs
-            const tabs = document.querySelectorAll('.tab');
-            tabs.forEach(tab => tab.classList.remove('active'));
+      function showTab(tabName) {
+        // Hide all tab contents
+        const contents = document.querySelectorAll('.tab-content');
+        contents.forEach((content) => content.classList.remove('active'));
 
-            // Show selected tab content
-            document.getElementById(tabName).classList.add('active');
+        // Remove active class from all tabs
+        const tabs = document.querySelectorAll('.tab');
+        tabs.forEach((tab) => tab.classList.remove('active'));
 
-            // Add active class to clicked tab
-            event.target.classList.add('active');
-        }
+        // Show selected tab content
+        document.getElementById(tabName).classList.add('active');
 
-        function generateArticleHTML(event) {
-            event.preventDefault();
+        // Add active class to clicked tab
+        event.target.classList.add('active');
+      }
 
-            const title = document.getElementById('articleTitle').value;
-            const tags = document.getElementById('articleTags').value;
-            const preview = document.getElementById('articlePreview').value;
-            const content = quill.root.innerHTML;
-            const date = new Date(document.getElementById('articleDate').value).toLocaleDateString('en-US', { 
-                year: 'numeric', 
-                month: 'short', 
-                day: 'numeric' 
-            });
+      function generateArticleHTML(event) {
+        event.preventDefault();
 
-            // Process tags
-            const tagArray = tags.split(',').map(tag => tag.trim());
-            const categoryData = tagArray.join(' ').toLowerCase();
-            const keywords = tagArray.join(' ').toLowerCase() + ' ' + title.toLowerCase() + ' ' + preview.toLowerCase();
+        const title = document.getElementById('articleTitle').value;
+        const tags = document.getElementById('articleTags').value;
+        const preview = document.getElementById('articlePreview').value;
+        const content = quill.root.innerHTML;
+        const date = new Date(document.getElementById('articleDate').value).toLocaleDateString(
+          'en-US',
+          {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+          }
+        );
 
-            // Generate HTML
-            const articleHTML = `<article class="article" data-category="${categoryData}" data-keywords="${keywords}">
+        // Process tags
+        const tagArray = tags.split(',').map((tag) => tag.trim());
+        const categoryData = tagArray.join(' ').toLowerCase();
+        const keywords = tagArray.join(' ').toLowerCase() + ' ' + title.toLowerCase() + ' ' + preview.toLowerCase();
+
+        // Generate HTML
+        const articleHTML = `<article class="article" data-category="${categoryData}" data-keywords="${keywords}">
     <div class="article-header">
         <h2 class="article-title">${title}</h2>
         <div class="article-meta">
             <span class="article-date">${date}</span>
             <div class="article-tags">
-                ${tagArray.map(tag => `<span class="article-tag">${tag}</span>`).join('\n                ')}
+                ${tagArray.map((tag) => `<span class="article-tag">${tag}</span>`).join('\n                ')}
             </div>
         </div>
     </div>
@@ -666,41 +892,48 @@ document.addEventListener('DOMContentLoaded', function () {
     </div>
 </article>`;
 
-            document.getElementById('htmlOutput').textContent = articleHTML;
-            document.getElementById('generatedHTML').style.display = 'block';
-        }
+        document.getElementById('htmlOutput').textContent = articleHTML;
+        document.getElementById('generatedHTML').style.display = 'block';
+      }
 
-        function copyHTML() {
-            const htmlOutput = document.getElementById('htmlOutput');
-            navigator.clipboard.writeText(htmlOutput.textContent).then(() => {
-                alert('HTML code copied to clipboard!');
-            });
-        }
+      function copyHTML() {
+        const htmlOutput = document.getElementById('htmlOutput');
+        navigator.clipboard.writeText(htmlOutput.textContent).then(() => {
+          alert('HTML code copied to clipboard!');
+        });
+      }
 
-        function hideGeneratedHTML() {
-            document.getElementById('generatedHTML').style.display = 'none';
-        }
+      function hideGeneratedHTML() {
+        document.getElementById('generatedHTML').style.display = 'none';
+      }
 
-        function createNewArticle() {
-            clearForm();
-            hideGeneratedHTML();
-        }
+      function createNewArticle() {
+        clearForm();
+        hideGeneratedHTML();
+      }
 
-        function clearForm() {
-            document.getElementById('articleForm').reset();
-            quill.setContents([]);
-            document.getElementById('articleDate').valueAsDate = new Date();
-        }
+      function clearForm() {
+        document.getElementById('articleForm').reset();
+        quill.setContents([]);
+        document.getElementById('articleDate').valueAsDate = new Date();
+      }
 
-        function editArticle(articleId) {
-            alert(`To edit this article:\n1. Find the article in index.html\n2. Update the content directly\n3. Commit changes to GitHub\n4. Article ID: ${articleId}`);
-        }
+      function editArticle(articleId) {
+        alert(
+          `To edit this article:\n1. Find the article in index.html\n2. Update the content directly\n3. Commit changes to GitHub\n4. Article ID: ${articleId}`
+        );
+      }
 
-        function deleteArticle(articleId) {
-            if (confirm(`Are you sure you want to delete this article?\n\nTo delete:\n1. Find the article in index.html\n2. Remove the entire <article> block\n3. Commit changes to GitHub\n\nArticle ID: ${articleId}`)) {
-                alert('Please follow the instructions above to delete the article from index.html');
-            }
+      function deleteArticle(articleId) {
+        if (
+          confirm(
+            `Are you sure you want to delete this article?\n\nTo delete:\n1. Find the article in index.html\n2. Remove the entire <article> block\n3. Commit changes to GitHub\n\nArticle ID: ${articleId}`
+          )
+        ) {
+          alert('Please follow the instructions above to delete the article from index.html');
         }
+      }
     </script>
+  </div>
 </body>
 </html>
